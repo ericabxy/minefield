@@ -1,17 +1,34 @@
+--- A minesweeper game for Lutro.
+--- Copyright (C) 2026  Eric Abides
+
+--- This program is free software: you can redistribute it and/or modify
+--- it under the terms of the GNU General Public License as published by
+--- the Free Software Foundation, either version 3 of the License, or
+--- (at your option) any later version.
+
+--- This program is distributed in the hope that it will be useful,
+--- but WITHOUT ANY WARRANTY; without even the implied warranty of
+--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--- GNU General Public License for more details.
+
+--- You should have received a copy of the GNU General Public License
+--- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+local pointer = require('pointer')
 local gfx_minesweeper = require('src.gfx_minesweeper')
 local grid = require('src.grid')
 
-local grid0 = grid:new():init()
 local image = love.graphics.newImage('share/frostc_minesweeper.png')
 local covered = love.graphics.newQuad(16, 32, 16, 16, 64, 48)
 local one_was_pressed = false
 local two_was_pressed = false
 
 function love.load()
+  grid0 = grid:new():init()
   cell_size = 16
   grid_x_count = 19
   grid_y_count = 14
   first_click = true
+  gameover = false
 end
 
 function love.update(dt)
@@ -68,11 +85,7 @@ function love.draw()
       end
     end
   end
-  love.graphics.draw(
-    image, gfx_minesweeper.pointer,
-    love.mouse.getX(),
-    love.mouse.getY()
-  )
+  pointer.draw()
 end
 
 function uncover()
@@ -114,6 +127,8 @@ function uncover()
         end
       end
     end
+  else
+    love.load()
   end
 end
 
