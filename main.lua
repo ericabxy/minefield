@@ -13,12 +13,9 @@
 
 --- You should have received a copy of the GNU General Public License
 --- along with this program.  If not, see <https://www.gnu.org/licenses/>.
-local pointer = require('pointer')
-local gfx_minesweeper = require('src.gfx_minesweeper')
+local pointer = require('src.pointer')
 local grid = require('src.grid')
 
-local image = love.graphics.newImage('share/frostc_minesweeper.png')
-local covered = love.graphics.newQuad(16, 32, 16, 16, 64, 48)
 local one_was_pressed = false
 local two_was_pressed = false
 
@@ -85,16 +82,15 @@ function love.draw()
       end
     end
   end
-  pointer.draw()
+  pointer:draw()
 end
 
 function uncover()
   if not gameover then
     if not grid0:is_flagged(selected_x, selected_y) then
       if first_click then
-        first_click = false
         grid0:init(selected_x, selected_y)
-        grid0:seedbombs()
+        first_click = false
       end
       if grid0:is_bombed(selected_x, selected_y) then
         grid0:uncover(selected_x, selected_y)
