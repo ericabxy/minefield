@@ -13,6 +13,7 @@
 
 --- You should have received a copy of the GNU General Public License
 --- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+local font = require('src.gfx_dos_8x8_font')
 local pointer = require('src.pointer')
 local grid = require('src.grid')
 
@@ -26,6 +27,8 @@ function love.load()
   grid_y_count = 14
   first_click = true
   gameover = false
+  nbombs = 40
+  nflags = 0
 end
 
 function love.update(dt)
@@ -83,6 +86,9 @@ function love.draw()
     end
   end
   pointer:draw()
+  love.graphics.setFont(font)
+  love.graphics.print('BOMBS: ' .. nbombs, 8, 0)
+  love.graphics.print('FLAGS: ' .. nflags, 240, 0)
 end
 
 function uncover()
@@ -132,10 +138,12 @@ function setflag()
   if not gameover then
     if grid0:is_covered(selected_x, selected_y) then
       grid0:flag(selected_x, selected_y)
+      nflags = nflags + 1
     elseif grid0:is_flagged(selected_x, selected_y) then
       --grid0:mark(selected_x, selected_y)
     --elseif grid0:is_marked(selected_x, selected_y) then
       grid0:cover(selected_x, selected_y)
+      nflags = nflags - 1
     end
   end
 end
