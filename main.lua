@@ -87,8 +87,7 @@ function love.draw()
   end
   pointer:draw()
   love.graphics.setFont(font)
-  love.graphics.print('BOMBS: ' .. nbombs, 8, 0)
-  love.graphics.print('FLAGS: ' .. nflags, 240, 0)
+  love.graphics.print('BOMBS: ' .. nbombs - nflags, 8, 0)
 end
 
 function uncover()
