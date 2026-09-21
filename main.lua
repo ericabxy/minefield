@@ -13,6 +13,16 @@
 
 --- You should have received a copy of the GNU General Public License
 --- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+local sfx_menu_selection_click = love.audio.newSource('share/nenadsimic_menu_selection_click.ogg', 'static')
+sfx_menu_selection_click:setVolume(.20)
+local sfx_click = love.audio.newSource('share/qubodup_click.ogg', 'static')
+local sfx_click_click = love.audio.newSource('share/qubodup_click_stereo.ogg', 'static')
+local sfx_click_negative = love.audio.newSource('share/qubodup_negative_stereo.ogg', 'static')
+local sfx_click_negative2 = love.audio.newSource('share/qubodup_negative2_stereo.ogg', 'static')
+local sfx_click_positive = love.audio.newSource('share/qubodup_positive_stereo.ogg', 'static')
+local sfx_vgdeathsound = love.audio.newSource('share/fupi_vgdeathsound.ogg', 'static')
+local sfx_vgmenuhighlight = love.audio.newSource('share/fupi_vgmenuhighlight.ogg', 'static')
+local sfx_vgmenuselect = love.audio.newSource('share/fupi_vgmenuselect.ogg', 'static')
 local font = require('src.gfx_dos_8x8_font')
 local pointer = require('src.pointer')
 local grid = require('src.grid')
@@ -32,8 +42,15 @@ function love.load()
 end
 
 function love.update(dt)
+  local previous_x, previous_y = selected_x, selected_y
   selected_x = math.floor(love.mouse.getX() / cell_size - .5) + 1
   selected_y = math.floor(love.mouse.getY() / cell_size - .5) + 1
+  if selected_x ~= previous_x or selected_y ~= previous_y then
+    if not gameover then
+      love.audio.stop(sfx_click_click)
+      love.audio.play(sfx_click_click)
+    end
+  end
   if selected_x > grid_x_count or selected_x < 1 or
      selected_y > grid_y_count or selected_y < 1 then
     return
@@ -98,11 +115,16 @@ function uncover()
         first_click = false
       end
       if grid0:is_bombed(selected_x, selected_y) then
+        if not sfx_vgdeathsound:isPlaying() then
+          love.audio.play(sfx_vgdeathsound)
+        end
         grid0:uncover(selected_x, selected_y)
         gameover = true
       else
         local stack = {{ x = selected_x, y = selected_y }}
         while #stack > 0 do
+          love.audio.stop(sfx_click_click)
+          love.audio.play(sfx_click_click)
           local current = table.remove(stack)
           local x = current.x
           local y = current.y
@@ -129,6 +151,7 @@ function uncover()
       end
     end
   else
+    love.audio.stop(sfx_vgdeathsound)
     love.load()
   end
 end
@@ -138,11 +161,15 @@ function setflag()
     if grid0:is_covered(selected_x, selected_y) then
       grid0:flag(selected_x, selected_y)
       nflags = nflags + 1
+      love.audio.stop(sfx_vgmenuselect)
+      love.audio.play(sfx_vgmenuselect)
     elseif grid0:is_flagged(selected_x, selected_y) then
       --grid0:mark(selected_x, selected_y)
     --elseif grid0:is_marked(selected_x, selected_y) then
       grid0:cover(selected_x, selected_y)
       nflags = nflags - 1
+      love.audio.stop(sfx_vgmenuhighlight)
+      love.audio.play(sfx_vgmenuhighlight)
     end
   end
 end
